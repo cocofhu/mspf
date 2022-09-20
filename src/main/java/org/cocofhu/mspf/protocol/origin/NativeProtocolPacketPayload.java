@@ -111,6 +111,7 @@ public class NativeProtocolPacketPayload implements Message {
             for(int i = 0 ; i < size ;++i){
                 b[this.position+ i ] = (byte) ((l >>> (i * 8)) & 0xff);
             }
+            this.position += size;
         }else{
             if (l < 251) {
                 ensureCapacity(1);
@@ -302,17 +303,17 @@ public class NativeProtocolPacketPayload implements Message {
         return byteBuffer;
     }
 
-    @Override
-    public String toString() {
-        int numBytes = Math.min(this.position, this.payloadLength);
-        int numBytesToDump = Math.min(numBytes, MAX_BYTES_TO_DUMP);
-        this.position = 0;
-        String dumped = dumpAsHex(readBytes(NativeProtocolConstants.StringLengthDataType.STRING_FIXED, numBytesToDump), numBytesToDump);
-        if (numBytesToDump < numBytes) {
-            return dumped + " ....(packet exceeds max. dump length)";
-        }
-        return dumped;
-    }
+//    @Override
+//    public String toString() {
+//        int numBytes = Math.min(this.position, this.payloadLength);
+//        int numBytesToDump = Math.min(numBytes, MAX_BYTES_TO_DUMP);
+//        this.position = 0;
+////        String dumped = dumpAsHex(readBytes(NativeProtocolConstants.StringLengthDataType.STRING_FIXED, numBytesToDump), numBytesToDump);
+//        if (numBytesToDump < numBytes) {
+////            return dumped + " ....(packet exceeds max. dump length)";
+//        }
+//        return dumped;
+//    }
 
 
 
@@ -339,8 +340,8 @@ public class NativeProtocolPacketPayload implements Message {
 
 
     // JUST FOR DEBUGGING
-    private static String dumpAsHex(byte[] byteBuffer, int length) {
-        length = Math.min(length, byteBuffer.length);
+    public static String dumpAsHex(byte[] byteBuffer) {
+        int length = byteBuffer.length;
         StringBuilder fullOutBuilder = new StringBuilder(length * 4);
         StringBuilder asciiOutBuilder = new StringBuilder(16);
 

@@ -2,11 +2,11 @@ package org.cocofhu.mspf.protocol.origin;
 
 import org.cocofhu.mspf.protocol.MessageHeader;
 
-public class NativeProtocolHeader implements MessageHeader {
+public class NativeProtocolPacketHeader implements MessageHeader {
 
     private final byte[] headerBytes;
 
-    public NativeProtocolHeader(byte[] headerBytes) {
+    public NativeProtocolPacketHeader(byte[] headerBytes) {
         this.headerBytes = headerBytes;
     }
 
