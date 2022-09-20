@@ -10,6 +10,14 @@ public class NativeProtocolPacketHeader implements MessageHeader {
         this.headerBytes = headerBytes;
     }
 
+    public NativeProtocolPacketHeader(int sequenceId, int payloadLength) {
+        this(new byte[]{
+                (byte) (payloadLength & 255),
+                (byte) ((payloadLength / 255) & 255),
+                (byte) ((payloadLength / 255 / 255) & 255),
+                (byte) sequenceId});
+    }
+
     @Override
     public byte[] getHeaderBytes() {
         return headerBytes;
@@ -24,5 +32,6 @@ public class NativeProtocolPacketHeader implements MessageHeader {
     public byte getMessageSequence() {
         return this.headerBytes[3];
     }
+
 
 }

@@ -70,10 +70,22 @@ public class NativeProtocolConstants {
     public static final int COM_BINLOG_DUMP_GTID = 30;
     public static final int COM_RESET_CONNECTION = 31;
 
-    /**
-     * Used to indicate that the server sent no field-level character set information, so the driver should use the connection-level character encoding instead.
-     */
-    public static final int NO_CHARSET_INFO = -1;
+
+    public interface Charset{
+        int UTF_8 = 255;
+    }
+
+    public interface ServerStatus{
+        int SERVER_STATUS_IN_TRANS = 1;
+        int SERVER_STATUS_AUTOCOMMIT = 2; // Server in auto_commit mode
+        int SERVER_MORE_RESULTS_EXISTS = 8; // Multi query - next query exists
+        int SERVER_QUERY_NO_GOOD_INDEX_USED = 16;
+        int SERVER_QUERY_NO_INDEX_USED = 32;
+        int SERVER_STATUS_CURSOR_EXISTS = 64;
+        int SERVER_STATUS_LAST_ROW_SENT = 128; // The server status for 'last-row-sent'
+        int SERVER_QUERY_WAS_SLOW = 2048;
+        int SERVER_SESSION_STATE_CHANGED = 1 << 14; // 16384
+    }
 
 
     public interface CapabilityFlags{

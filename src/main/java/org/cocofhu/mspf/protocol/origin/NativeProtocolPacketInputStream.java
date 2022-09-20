@@ -25,7 +25,7 @@ public class NativeProtocolPacketInputStream extends InputStream {
             throw new IOException("read packet payload failed, not has enough bytes to read.");
         }
         NativeProtocolPacketPayload message = new NativeProtocolPacketPayload(payload);
-        return new NativeProtocolPacket(hPacket,message);
+        return new NativeProtocolPacket(hPacket.getMessageSequence(),message);
     }
 
     /** 不要使用该方法 */

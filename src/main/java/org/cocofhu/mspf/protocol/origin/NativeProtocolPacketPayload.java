@@ -32,11 +32,10 @@ public class NativeProtocolPacketPayload implements Message {
     public static final float DEFAULT_RESIZE_FACTOR = 1.25f;
 
     /** 数据实际大小 */
-    @Getter
-    private int payloadLength = 0;
+    private int payloadLength;
     private byte[] byteBuffer;
     private int position = 0;
-    private static final int MAX_BYTES_TO_DUMP = 1024;
+
 
 
     public NativeProtocolPacketPayload(byte[] buf) {
@@ -45,8 +44,17 @@ public class NativeProtocolPacketPayload implements Message {
     }
 
     public NativeProtocolPacketPayload(int size) {
+        this(size, false);
+    }
+
+    public NativeProtocolPacketPayload(int size, boolean emptyData) {
         this.byteBuffer = new byte[size];
-        this.payloadLength = size;
+        if(emptyData){
+            this.payloadLength = size;
+        }else{
+            this.payloadLength = 0;
+        }
+
     }
 
     /**
@@ -68,15 +76,6 @@ public class NativeProtocolPacketPayload implements Message {
             this.byteBuffer = newBytes;
         }
     }
-
-
-    @Override
-    public int getPosition() {
-        return this.position;
-    }
-
-
-
 
     // Package detect methods
     public boolean isErrorPacket() {
@@ -298,22 +297,18 @@ public class NativeProtocolPacketPayload implements Message {
 
 
     // Override methods
+
     @Override
-    public byte[] getByteBuffer() {
-        return byteBuffer;
+    public byte[] getUnderlyingBytes() {
+        return this.byteBuffer;
     }
 
-//    @Override
-//    public String toString() {
-//        int numBytes = Math.min(this.position, this.payloadLength);
-//        int numBytesToDump = Math.min(numBytes, MAX_BYTES_TO_DUMP);
-//        this.position = 0;
-////        String dumped = dumpAsHex(readBytes(NativeProtocolConstants.StringLengthDataType.STRING_FIXED, numBytesToDump), numBytesToDump);
-//        if (numBytesToDump < numBytes) {
-////            return dumped + " ....(packet exceeds max. dump length)";
-//        }
-//        return dumped;
-//    }
+    /** 这里的position就相当于实际的bufferSize */
+    @Override
+    public int getPayloadLength() {
+        return this.payloadLength;
+    }
+
 
 
 
@@ -340,28 +335,7 @@ public class NativeProtocolPacketPayload implements Message {
 
 
     // JUST FOR DEBUGGING
-    public static String dumpAsHex(byte[] byteBuffer) {
-        int length = byteBuffer.length;
-        StringBuilder fullOutBuilder = new StringBuilder(length * 4);
-        StringBuilder asciiOutBuilder = new StringBuilder(16);
 
-        for (int p = 0, l = 0; p < length; l = 0) { // p: position in buffer (1..length); l: position in line (1..8)
-            for (; l < 8 && p < length; p++, l++) {
-                int asInt = byteBuffer[p] & 0xff;
-                if (asInt < 0x10) {
-                    fullOutBuilder.append("0");
-                }
-                fullOutBuilder.append(Integer.toHexString(asInt)).append(" ");
-                asciiOutBuilder.append(" ").append(asInt >= 0x20 && asInt < 0x7f ? (char) asInt : ".");
-            }
-            for (; l < 8; l++) { // if needed, fill remaining of last line with spaces
-                fullOutBuilder.append("   ");
-            }
-            fullOutBuilder.append("   ").append(asciiOutBuilder).append(System.lineSeparator());
-            asciiOutBuilder.setLength(0);
-        }
-        return fullOutBuilder.toString();
-    }
 
 }
 
