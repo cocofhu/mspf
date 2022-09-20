@@ -1,4 +1,4 @@
-package org.cocofhu.mspf.exception;
+package com.cocofhu.mspf.exception;
 
 public class DataTypeNotSupportedException extends ProtocolException {
 

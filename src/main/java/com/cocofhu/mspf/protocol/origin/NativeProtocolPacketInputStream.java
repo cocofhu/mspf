@@ -1,4 +1,4 @@
-package org.cocofhu.mspf.protocol.origin;
+package com.cocofhu.mspf.protocol.origin;
 
 
 import java.io.IOException;

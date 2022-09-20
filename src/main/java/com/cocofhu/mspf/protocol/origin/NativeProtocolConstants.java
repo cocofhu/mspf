@@ -1,4 +1,4 @@
-package org.cocofhu.mspf.protocol.origin;
+package com.cocofhu.mspf.protocol.origin;
 
 /**
  * MySQL TCP连接常量定义

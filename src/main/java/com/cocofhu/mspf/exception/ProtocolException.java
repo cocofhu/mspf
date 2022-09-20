@@ -1,4 +1,4 @@
-package org.cocofhu.mspf.exception;
+package com.cocofhu.mspf.exception;
 
 
 import lombok.extern.slf4j.Slf4j;

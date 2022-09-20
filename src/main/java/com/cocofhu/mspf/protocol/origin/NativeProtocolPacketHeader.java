@@ -1,6 +1,6 @@
-package org.cocofhu.mspf.protocol.origin;
+package com.cocofhu.mspf.protocol.origin;
 
-import org.cocofhu.mspf.protocol.MessageHeader;
+import com.cocofhu.mspf.protocol.MessageHeader;
 
 public class NativeProtocolPacketHeader implements MessageHeader {
 

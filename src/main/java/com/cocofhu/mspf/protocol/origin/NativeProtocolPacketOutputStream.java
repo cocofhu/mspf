@@ -1,8 +1,7 @@
-package org.cocofhu.mspf.protocol.origin;
+package com.cocofhu.mspf.protocol.origin;
 
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 public class NativeProtocolPacketOutputStream extends OutputStream {

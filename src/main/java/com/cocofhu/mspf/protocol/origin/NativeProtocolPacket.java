@@ -1,6 +1,6 @@
-package org.cocofhu.mspf.protocol.origin;
+package com.cocofhu.mspf.protocol.origin;
 
-import org.cocofhu.mspf.protocol.Packet;
+import com.cocofhu.mspf.protocol.Packet;
 
 // https://dev.mysql.com/doc/internals/en/mysql-packet.html
 /**

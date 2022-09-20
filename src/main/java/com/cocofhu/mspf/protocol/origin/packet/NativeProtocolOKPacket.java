@@ -1,10 +1,8 @@
-package org.cocofhu.mspf.protocol.origin.packet;
+package com.cocofhu.mspf.protocol.origin.packet;
 
-import org.cocofhu.mspf.protocol.origin.NativeProtocolConstants;
-import org.cocofhu.mspf.protocol.origin.NativeProtocolPacket;
-import org.cocofhu.mspf.protocol.origin.NativeProtocolPacketPayload;
-
-import static org.cocofhu.mspf.protocol.origin.NativeProtocolConstants.TYPE_ID_OK;
+import com.cocofhu.mspf.protocol.origin.NativeProtocolConstants;
+import com.cocofhu.mspf.protocol.origin.NativeProtocolPacket;
+import com.cocofhu.mspf.protocol.origin.NativeProtocolPacketPayload;
 
 public class NativeProtocolOKPacket extends NativeProtocolPacket {
 
@@ -29,7 +27,7 @@ public class NativeProtocolOKPacket extends NativeProtocolPacket {
         this.statusFlag = 0 ;
         this.warnings = 0;
         NativeProtocolPacketPayload message = this.getMessage();
-        message.writeInteger(NativeProtocolConstants.IntegerDataType.INT1, TYPE_ID_OK);
+        message.writeInteger(NativeProtocolConstants.IntegerDataType.INT1, NativeProtocolConstants.TYPE_ID_OK);
         message.writeInteger(NativeProtocolConstants.IntegerDataType.INT_LENENC, affectedRows);
         message.writeInteger(NativeProtocolConstants.IntegerDataType.INT_LENENC, lastInsertId);
         message.writeInteger(NativeProtocolConstants.IntegerDataType.INT2, statusFlag);

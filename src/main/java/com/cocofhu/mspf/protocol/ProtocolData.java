@@ -1,4 +1,4 @@
-package org.cocofhu.mspf.protocol;
+package com.cocofhu.mspf.protocol;
 
 public @interface ProtocolData {
     int size();
