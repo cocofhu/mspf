@@ -28,6 +28,7 @@ public class NativeProtocolHandshakeResponse41Packet extends NativeProtocolPacke
      */
     public NativeProtocolHandshakeResponse41Packet(NativeProtocolPacket packet) {
         super(packet.getHeader().getMessageSequence(), packet.getMessage());
+        message.setByteArrayChangedListener(this::reloadFields);
         reloadFields();
     }
 

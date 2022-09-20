@@ -44,7 +44,7 @@ public class NativeProtocolPacketPayload implements Message {
 
     private ByteArrayChangedListener byteArrayChangedListener;
 
-    protected void setByteArrayChangedListener(ByteArrayChangedListener byteArrayChangedListener) {
+    public void setByteArrayChangedListener(ByteArrayChangedListener byteArrayChangedListener) {
         this.byteArrayChangedListener = byteArrayChangedListener;
     }
 
