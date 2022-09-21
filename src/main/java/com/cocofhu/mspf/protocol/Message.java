@@ -1,8 +1,9 @@
 package com.cocofhu.mspf.protocol;
 
 
-import java.util.function.Consumer;
-
+/**
+ *
+ */
 public interface Message {
 
     /**
@@ -16,17 +17,12 @@ public interface Message {
             return null;
         }
         byte[] bytes = new byte[size];
-        underlyingBytes(underlyingBytes->System.arraycopy(underlyingBytes,0,bytes,0, size), false);
+        System.arraycopy(underlyingBytes(),0,bytes,0, size);
         return bytes;
     }
 
     int getPayloadLength();
 
-    void underlyingBytes(Consumer<byte[]> consumer, boolean changed);
-
-    default void underlyingBytes(Consumer<byte[]> consumer){
-        underlyingBytes(consumer, true);
-    }
-
+    byte[] underlyingBytes();
 
 }

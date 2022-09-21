@@ -17,10 +17,6 @@ import static com.cocofhu.mspf.protocol.origin.NativeProtocolConstants.StringLen
  */
 public class NativeProtocolPacketPayload implements Message {
 
-    @FunctionalInterface
-    public interface ByteArrayChangedListener{
-        void changed();
-    }
 
     // 如果可变长度整数的第一个字节是251(0xfb),这将是一个空的ProtocolText::ResultsetRow.
     public static final long NULL_LENGTH = -1;
@@ -42,11 +38,6 @@ public class NativeProtocolPacketPayload implements Message {
     private byte[] byteBuffer;
     private int position = 0;
 
-    private ByteArrayChangedListener byteArrayChangedListener;
-
-    public void setByteArrayChangedListener(ByteArrayChangedListener byteArrayChangedListener) {
-        this.byteArrayChangedListener = byteArrayChangedListener;
-    }
 
     public NativeProtocolPacketPayload(byte[] buf) {
         this.byteBuffer = buf;
@@ -309,11 +300,8 @@ public class NativeProtocolPacketPayload implements Message {
     // Override methods
 
     @Override
-    public void underlyingBytes(Consumer<byte[]> consumer, boolean changed) {
-        consumer.accept(this.byteBuffer);
-        if(byteArrayChangedListener != null && changed){
-            byteArrayChangedListener.changed();
-        }
+    public byte[] underlyingBytes() {
+       return byteBuffer;
     }
 
     /** 这里的position就相当于实际的bufferSize */
@@ -345,10 +333,6 @@ public class NativeProtocolPacketPayload implements Message {
     protected void adjustPayloadLength() {
         if (this.position > this.payloadLength) {
             this.payloadLength = this.position;
-        }
-        // 当底层发生变更，需要通知上层字段做相应的变更
-        if(byteArrayChangedListener != null){
-            byteArrayChangedListener.changed();
         }
     }
 

@@ -52,11 +52,11 @@ public class Main {
     }
 
     public static byte[] scramble411(byte[] password, byte[] seed) {
-        MessageDigest md;
+        MessageDigest md = null;
         try {
             md = MessageDigest.getInstance("SHA-1");
         } catch (NoSuchAlgorithmException ex) {
-            throw new AssertionFailedException(ex);
+//            throw new AssertionFailedException(ex);
         }
 
         byte[] passwordHashStage1 = md.digest(password);

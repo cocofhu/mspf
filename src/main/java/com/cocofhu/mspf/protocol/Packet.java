@@ -1,8 +1,6 @@
 package com.cocofhu.mspf.protocol;
 
 
-import java.util.function.Consumer;
-
 /**
  * MySQL 网络包
  * @param <H>   消息头
@@ -23,10 +21,11 @@ public interface Packet<H extends MessageHeader,M extends Message> {
         H header = getHeader();
         M message = getMessage();
         byte[] headerBytes = header.getHeaderBytes();
+        byte[] messageBytes = message.underlyingBytes();
         byte[] newBytes = new byte[headerBytes.length + message.getPayloadLength()];
         System.arraycopy(headerBytes, 0, newBytes, 0, headerBytes.length);
         // 获取底层数据，减少一次拷贝
-        message.underlyingBytes(messageBytes->System.arraycopy(messageBytes, 0, newBytes, headerBytes.length, message.getPayloadLength()), false);
+        System.arraycopy(messageBytes, 0, newBytes, headerBytes.length, message.getPayloadLength());
         return newBytes;
     }
 }

@@ -3,7 +3,9 @@ package com.cocofhu.mspf.protocol.origin.packet;
 import com.cocofhu.mspf.protocol.origin.NativeProtocolConstants;
 import com.cocofhu.mspf.protocol.origin.NativeProtocolPacket;
 import com.cocofhu.mspf.protocol.origin.NativeProtocolPacketPayload;
+import com.cocofhu.mspf.util.DebugUtils;
 
+import java.util.Arrays;
 import java.util.Random;
 
 
@@ -100,5 +102,18 @@ public class NativeProtocolHandshakeV10Packet extends NativeProtocolPacket {
         return seed;
     }
 
-
+    @Override
+    public String toString() {
+        return "NativeProtocolHandshakeV10Packet{" +
+                "scrambleData=" + Arrays.toString(scrambleData) +
+                ", serverVersion='" + serverVersion + '\'' +
+                ", authPluginName='" + authPluginName + '\'' +
+                ", connectionId=" + connectionId +
+                ", capabilityFlags=" + DebugUtils.listAllCapabilityFlags(capabilityFlags) +
+                ", charset=" + charset +
+                ", statusFlags=" + statusFlags +
+                ", sequenceId=" + sequenceId +
+                ", message=" + message +
+                '}';
+    }
 }
