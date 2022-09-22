@@ -1,12 +1,12 @@
-package com.cocofhu.mspf.protocol.origin;
+package com.cocofhu.mspf.protocol.cs;
 
 import com.cocofhu.mspf.protocol.Packet;
 
 // https://dev.mysql.com/doc/internals/en/mysql-packet.html
 /**
- * MySQL tcp协议网络包，由消息头和数据部分构成
+ * MySQL client/server协议网络包，由消息头和数据部分构成
  */
-public class NativeProtocolPacket implements Packet<NativeProtocolPacketHeader, NativeProtocolPacketPayload> {
+public class NativeProtocolPacket {
 
     protected final int sequenceId;
     protected final NativeProtocolPacketPayload message;
@@ -22,14 +22,23 @@ public class NativeProtocolPacket implements Packet<NativeProtocolPacketHeader, 
         this.message = message;
     }
 
-
-    @Override
     public NativeProtocolPacketHeader getHeader() {
         return new NativeProtocolPacketHeader(sequenceId, message.getPayloadLength());
     }
 
-    @Override
     public NativeProtocolPacketPayload getMessage() {
         return message;
+    }
+
+    public byte[] toBytes(){
+        // 获取底层数据，减少一次拷贝
+        NativeProtocolPacketHeader header = getHeader();
+        NativeProtocolPacketPayload message = getMessage();
+        byte[] headerBytes = header.getHeaderBytes();
+        byte[] messageBytes = message.underlyingBytes();
+        byte[] newBytes = new byte[headerBytes.length + message.getPayloadLength()];
+        System.arraycopy(headerBytes, 0, newBytes, 0, headerBytes.length);
+        System.arraycopy(messageBytes, 0, newBytes, headerBytes.length, message.getPayloadLength());
+        return newBytes;
     }
 }

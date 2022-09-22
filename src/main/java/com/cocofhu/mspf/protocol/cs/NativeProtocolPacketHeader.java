@@ -1,8 +1,7 @@
-package com.cocofhu.mspf.protocol.origin;
+package com.cocofhu.mspf.protocol.cs;
 
-import com.cocofhu.mspf.protocol.MessageHeader;
 
-public class NativeProtocolPacketHeader implements MessageHeader {
+public class NativeProtocolPacketHeader {
 
     private final byte[] headerBytes;
 
@@ -18,20 +17,16 @@ public class NativeProtocolPacketHeader implements MessageHeader {
                 (byte) sequenceId});
     }
 
-    @Override
     public byte[] getHeaderBytes() {
         return headerBytes;
     }
 
-    @Override
     public int getMessageSize() {
         return (this.headerBytes[0] & 0xff) + ((this.headerBytes[1] & 0xff) << 8) + ((this.headerBytes[2] & 0xff) << 16);
     }
 
-    @Override
     public byte getMessageSequence() {
         return this.headerBytes[3];
     }
-
 
 }

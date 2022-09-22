@@ -1,21 +1,20 @@
-package com.cocofhu.mspf.protocol.origin;
+package com.cocofhu.mspf.protocol.cs;
 
 
 
 import com.cocofhu.mspf.protocol.Message;
 
 import java.io.UnsupportedEncodingException;
-import java.util.function.Consumer;
 
-import static com.cocofhu.mspf.protocol.origin.NativeProtocolConstants.IntegerDataType.*;
-import static com.cocofhu.mspf.protocol.origin.NativeProtocolConstants.StringLengthDataType.*;
+import static com.cocofhu.mspf.protocol.cs.NativeProtocolConstants.IntegerDataType.*;
+import static com.cocofhu.mspf.protocol.cs.NativeProtocolConstants.StringLengthDataType.*;
 
 
 
 /**
  * MySQL TCP 协议网络包数据部分实现类
  */
-public class NativeProtocolPacketPayload implements Message {
+public class NativeProtocolPacketPayload {
 
 
     // 如果可变长度整数的第一个字节是251(0xfb),这将是一个空的ProtocolText::ResultsetRow.
@@ -273,39 +272,39 @@ public class NativeProtocolPacketPayload implements Message {
         return res;
     }
 
-    /** 跳过一个指定的数据类型 */
-    public void skipBytes(NativeProtocolConstants.StringSelfDataType type) {
-        switch (type) {
-            case STRING_TERM:
-                while ((this.position < this.payloadLength) && (this.byteBuffer[this.position] != 0)) {
-                    this.position++;
-                }
-                this.position++; // skip terminating byte
-                break;
 
-            case STRING_LENENC:
-                long len = readInteger(INT_LENENC);
-                if (len != NULL_LENGTH && len != 0) {
-                    this.position += (int) len;
-                }
-                break;
-
-            case STRING_EOF:
-                this.position = this.payloadLength;
-                break;
-        }
-    }
+//    public void skipBytes(NativeProtocolConstants.StringSelfDataType type) {
+//        switch (type) {
+//            case STRING_TERM:
+//                while ((this.position < this.payloadLength) && (this.byteBuffer[this.position] != 0)) {
+//                    this.position++;
+//                }
+//                this.position++; // skip terminating byte
+//                break;
+//
+//            case STRING_LENENC:
+//                long len = readInteger(INT_LENENC);
+//                if (len != NULL_LENGTH && len != 0) {
+//                    this.position += (int) len;
+//                }
+//                break;
+//
+//            case STRING_EOF:
+//                this.position = this.payloadLength;
+//                break;
+//        }
+//    }
 
 
     // Override methods
 
-    @Override
+
+    /** 直接操作底层字节数组时需要格外小心，操作不当可能会造成错误的MySQL包 */
     public byte[] underlyingBytes() {
        return byteBuffer;
     }
 
     /** 这里的position就相当于实际的bufferSize */
-    @Override
     public int getPayloadLength() {
         return this.payloadLength;
     }

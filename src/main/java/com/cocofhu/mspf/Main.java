@@ -1,14 +1,12 @@
 package com.cocofhu.mspf;
 
-import com.cocofhu.mspf.protocol.origin.NativeProtocolConstants;
-import com.cocofhu.mspf.protocol.origin.NativeProtocolPacket;
-import com.cocofhu.mspf.protocol.origin.NativeProtocolPacketInputStream;
-import com.cocofhu.mspf.protocol.origin.NativeProtocolPacketOutputStream;
-import com.cocofhu.mspf.protocol.origin.packet.NativeProtocolHandshakeResponse41Packet;
-import com.cocofhu.mspf.protocol.origin.packet.NativeProtocolHandshakeV10Packet;
-import com.cocofhu.mspf.protocol.origin.packet.NativeProtocolOKPacket;
+import com.cocofhu.mspf.protocol.cs.NativeProtocolPacket;
+import com.cocofhu.mspf.protocol.cs.NativeProtocolPacketInputStream;
+import com.cocofhu.mspf.protocol.cs.NativeProtocolPacketOutputStream;
+import com.cocofhu.mspf.protocol.cs.packet.NativeProtocolHandshakeResponse41Packet;
+import com.cocofhu.mspf.protocol.cs.packet.NativeProtocolHandshakeV10Packet;
+import com.cocofhu.mspf.protocol.cs.packet.NativeProtocolOKPacket;
 import com.cocofhu.mspf.util.DebugUtils;
-import com.mysql.cj.exceptions.AssertionFailedException;
 
 import java.io.IOException;
 import java.net.ServerSocket;

@@ -1,11 +1,12 @@
 package com.cocofhu.mspf;
 
-import com.cocofhu.mspf.protocol.origin.NativeProtocolPacket;
-import com.cocofhu.mspf.protocol.origin.NativeProtocolPacketInputStream;
-import com.cocofhu.mspf.protocol.origin.NativeProtocolPacketOutputStream;
-import com.cocofhu.mspf.protocol.origin.packet.NativeProtocolHandshakeResponse41Packet;
-import com.cocofhu.mspf.protocol.origin.packet.NativeProtocolHandshakeV10Packet;
-import com.cocofhu.mspf.protocol.origin.packet.NativeProtocolOKPacket;
+import com.cocofhu.mspf.protocol.cs.NativeProtocolPacket;
+import com.cocofhu.mspf.protocol.cs.NativeProtocolPacketInputStream;
+import com.cocofhu.mspf.protocol.cs.NativeProtocolPacketOutputStream;
+import com.cocofhu.mspf.protocol.cs.packet.NativeProtocolErrorPacket;
+import com.cocofhu.mspf.protocol.cs.packet.NativeProtocolHandshakeResponse41Packet;
+import com.cocofhu.mspf.protocol.cs.packet.NativeProtocolHandshakeV10Packet;
+import com.cocofhu.mspf.protocol.cs.packet.NativeProtocolOKPacket;
 import com.cocofhu.mspf.util.DebugUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,6 +16,7 @@ import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
@@ -60,6 +62,18 @@ public class SimpleServer {
                 out.writeNativeProtocolPacket(new NativeProtocolOKPacket(2));
 
                 log.info("send auth ok, connectionId = {}.", this.connectionId);
+
+
+                while (true){
+                    System.out.println(DebugUtils.dumpAsHex(in.readNativeProtocolPacket().toBytes()));
+                    out.write(new NativeProtocolErrorPacket(1,1,"unsupported!").toBytes());
+                }
+
+
+
+
+
+
 
 
             } catch (Exception e) {

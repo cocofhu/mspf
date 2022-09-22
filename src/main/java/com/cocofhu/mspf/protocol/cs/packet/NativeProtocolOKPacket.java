@@ -1,8 +1,8 @@
-package com.cocofhu.mspf.protocol.origin.packet;
+package com.cocofhu.mspf.protocol.cs.packet;
 
-import com.cocofhu.mspf.protocol.origin.NativeProtocolConstants;
-import com.cocofhu.mspf.protocol.origin.NativeProtocolPacket;
-import com.cocofhu.mspf.protocol.origin.NativeProtocolPacketPayload;
+import com.cocofhu.mspf.protocol.cs.NativeProtocolConstants;
+import com.cocofhu.mspf.protocol.cs.NativeProtocolPacket;
+import com.cocofhu.mspf.protocol.cs.NativeProtocolPacketPayload;
 
 public class NativeProtocolOKPacket extends NativeProtocolPacket {
 

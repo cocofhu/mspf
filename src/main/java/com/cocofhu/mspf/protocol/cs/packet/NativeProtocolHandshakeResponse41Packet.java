@@ -1,26 +1,27 @@
-package com.cocofhu.mspf.protocol.origin.packet;
+package com.cocofhu.mspf.protocol.cs.packet;
 
 import com.cocofhu.mspf.exception.CharsetNotSupportedException;
 import com.cocofhu.mspf.exception.MinimumCapabilityException;
-import com.cocofhu.mspf.protocol.origin.NativeProtocolConstants;
-import com.cocofhu.mspf.protocol.origin.NativeProtocolPacket;
-import com.cocofhu.mspf.protocol.origin.NativeProtocolPacketHeader;
-import com.cocofhu.mspf.protocol.origin.NativeProtocolPacketPayload;
+import com.cocofhu.mspf.protocol.cs.NativeProtocolConstants;
+import com.cocofhu.mspf.protocol.cs.NativeProtocolPacket;
+import com.cocofhu.mspf.protocol.cs.NativeProtocolPacketHeader;
 import com.cocofhu.mspf.util.DebugUtils;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
-import static com.cocofhu.mspf.protocol.origin.NativeProtocolConstants.CapabilityFlags.*;
+import static com.cocofhu.mspf.protocol.cs.NativeProtocolConstants.CapabilityFlags.*;
 
 public class NativeProtocolHandshakeResponse41Packet extends NativeProtocolPacket {
 
     // 注意：CLIENT_PLUGIN_AUTH,CLIENT_PROTOCOL_41,CLIENT_PLUGIN_AUTH,CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA 这四个必须要有，否则将影响数据包的解析
     // https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_connection_phase_packets_protocol_handshake_response.html
-    private static final int MIN_CLIENT_FLAGS = CLIENT_LONG_PASSWORD | CLIENT_LONG_FLAG | CLIENT_PROTOCOL_41 | CLIENT_INTERACTIVE | CLIENT_TRANSACTIONS | CLIENT_SECURE_CONNECTION | CLIENT_PLUGIN_AUTH | CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA;
+    // CLIENT_INTERACTIVE | CLIENT_TRANSACTIONS JDBC驱动并没有这两个标志位
+    private static final int MIN_CLIENT_FLAGS = CLIENT_LONG_PASSWORD | CLIENT_LONG_FLAG | CLIENT_PROTOCOL_41  | CLIENT_SECURE_CONNECTION | CLIENT_PLUGIN_AUTH | CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA;
 
     // 目前仅支持utf-8
-    private static final int ONLY_SUPPORTED_CHARSET = NativeProtocolConstants.Charset.UTF_8;
+    private static final HashMap<Integer,String> ONLY_SUPPORTED_CHARSET = NativeProtocolConstants.UTF8_COLLATION_NAME;
     private static final String ONLY_SUPPORTED_CHARSET_NAME = "utf-8";
 
     // the Authentication Method used by the client to generate auth-response value in this packet. This is an UTF-8 string.
@@ -68,7 +69,7 @@ public class NativeProtocolHandshakeResponse41Packet extends NativeProtocolPacke
         this.charset = (int) message.readInteger(NativeProtocolConstants.IntegerDataType.INT1);
 
         // 这里后期支持多字符集 目前仅支持utf-8
-        if (this.charset != ONLY_SUPPORTED_CHARSET) {
+        if (!ONLY_SUPPORTED_CHARSET.containsKey(this.charset)) {
             throw new CharsetNotSupportedException(this.charset);
         }
 

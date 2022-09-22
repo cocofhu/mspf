@@ -1,6 +1,6 @@
 package com.cocofhu.mspf.util;
 
-import com.cocofhu.mspf.protocol.origin.NativeProtocolConstants;
+import com.cocofhu.mspf.protocol.cs.NativeProtocolConstants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
