@@ -1,4 +1,4 @@
-package com.cocofhu.mspf.protocol.cs;
+package com.cocofhu.mspf.protocol;
 
 import java.util.HashMap;
 
@@ -6,7 +6,7 @@ import java.util.HashMap;
  * MySQL TCP连接常量定义
  * @author cocofhu
  */
-public class NativeProtocolConstants {
+public class MySQLProtocolConstants {
 
     public static final HashMap<Integer,String> UTF8_COLLATION_NAME;
     static {
@@ -366,7 +366,7 @@ public class NativeProtocolConstants {
         STRING_EOF;
     }
 
-    public NativeProtocolConstants() {
+    public MySQLProtocolConstants() {
         super();
     }
 }

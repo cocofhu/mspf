@@ -1,20 +1,18 @@
-package com.cocofhu.mspf.protocol.cs;
+package com.cocofhu.mspf.protocol;
 
 
-
-import com.cocofhu.mspf.protocol.Message;
 
 import java.io.UnsupportedEncodingException;
 
-import static com.cocofhu.mspf.protocol.cs.NativeProtocolConstants.IntegerDataType.*;
-import static com.cocofhu.mspf.protocol.cs.NativeProtocolConstants.StringLengthDataType.*;
+import static com.cocofhu.mspf.protocol.MySQLProtocolConstants.IntegerDataType.*;
+import static com.cocofhu.mspf.protocol.MySQLProtocolConstants.StringLengthDataType.*;
 
 
 
 /**
  * MySQL TCP 协议网络包数据部分实现类
  */
-public class NativeProtocolPacketPayload {
+public class MySQLProtocolPacketPayload {
 
 
     // 如果可变长度整数的第一个字节是251(0xfb),这将是一个空的ProtocolText::ResultsetRow.
@@ -38,16 +36,16 @@ public class NativeProtocolPacketPayload {
     private int position = 0;
 
 
-    public NativeProtocolPacketPayload(byte[] buf) {
+    public MySQLProtocolPacketPayload(byte[] buf) {
         this.byteBuffer = buf;
         this.payloadLength = buf.length;
     }
 
-    public NativeProtocolPacketPayload(int size) {
+    public MySQLProtocolPacketPayload(int size) {
         this(size, false);
     }
 
-    public NativeProtocolPacketPayload(int size, boolean emptyData) {
+    public MySQLProtocolPacketPayload(int size, boolean emptyData) {
         this.byteBuffer = new byte[size];
         if(emptyData){
             this.payloadLength = size;
@@ -101,7 +99,7 @@ public class NativeProtocolPacketPayload {
     }
 
     // Read-Write methods
-    public void writeInteger(NativeProtocolConstants.IntegerDataType type, long l) {
+    public void writeInteger(MySQLProtocolConstants.IntegerDataType type, long l) {
         byte[] b;
         int size = getSize(type);
         if(size != -1){
@@ -135,7 +133,7 @@ public class NativeProtocolPacketPayload {
 
         adjustPayloadLength();
     }
-    public final long readInteger(NativeProtocolConstants.IntegerDataType type) {
+    public final long readInteger(MySQLProtocolConstants.IntegerDataType type) {
         byte[] b = this.byteBuffer;
         int size = getSize(type);
         if(size != -1){
@@ -158,13 +156,13 @@ public class NativeProtocolPacketPayload {
 
 
     }
-    public final void writeBytes(NativeProtocolConstants.StringSelfDataType type, byte[] b) {
+    public final void writeBytes(MySQLProtocolConstants.StringSelfDataType type, byte[] b) {
         writeBytes(type, b, 0, b.length);
     }
-    public final void writeBytes(NativeProtocolConstants.StringLengthDataType type, byte[] b) {
+    public final void writeBytes(MySQLProtocolConstants.StringLengthDataType type, byte[] b) {
         writeBytes(type, b, 0, b.length);
     }
-    public void writeBytes(NativeProtocolConstants.StringSelfDataType type, byte[] b, int offset, int len) {
+    public void writeBytes(MySQLProtocolConstants.StringSelfDataType type, byte[] b, int offset, int len) {
         switch (type) {
             case STRING_EOF:
                 writeBytes(STRING_FIXED, b, offset, len);
@@ -185,7 +183,7 @@ public class NativeProtocolPacketPayload {
 
         adjustPayloadLength();
     }
-    public void writeBytes(NativeProtocolConstants.StringLengthDataType type, byte[] b, int offset, int len) {
+    public void writeBytes(MySQLProtocolConstants.StringLengthDataType type, byte[] b, int offset, int len) {
         switch (type) {
             case STRING_FIXED:
             case STRING_VAR:
@@ -197,7 +195,7 @@ public class NativeProtocolPacketPayload {
 
         adjustPayloadLength();
     }
-    public byte[] readBytes(NativeProtocolConstants.StringSelfDataType type) {
+    public byte[] readBytes(MySQLProtocolConstants.StringSelfDataType type) {
         byte[] b;
         switch (type) {
             case STRING_TERM:
@@ -218,7 +216,7 @@ public class NativeProtocolPacketPayload {
         }
         return null;
     }
-    public byte[] readBytes(NativeProtocolConstants.StringLengthDataType type, int len) {
+    public byte[] readBytes(MySQLProtocolConstants.StringLengthDataType type, int len) {
         byte[] b;
         switch (type) {
             case STRING_FIXED:
@@ -230,7 +228,7 @@ public class NativeProtocolPacketPayload {
         }
         return null;
     }
-    public String readString(NativeProtocolConstants.StringSelfDataType type, String encoding) {
+    public String readString(MySQLProtocolConstants.StringSelfDataType type, String encoding) {
         String res = null;
         switch (type) {
             case STRING_TERM:
@@ -252,7 +250,7 @@ public class NativeProtocolPacketPayload {
         }
         return res;
     }
-    public String readString(NativeProtocolConstants.StringLengthDataType type, String encoding, int len) {
+    public String readString(MySQLProtocolConstants.StringLengthDataType type, String encoding, int len) {
         String res = null;
         switch (type) {
             case STRING_FIXED:
@@ -313,7 +311,7 @@ public class NativeProtocolPacketPayload {
 
 
     // Private Method
-    private static int getSize(NativeProtocolConstants.IntegerDataType type) {
+    private static int getSize(MySQLProtocolConstants.IntegerDataType type) {
         int size = -1;
         switch (type) {
             case INT1: size = 1; break;

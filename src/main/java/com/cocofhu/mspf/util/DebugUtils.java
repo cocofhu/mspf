@@ -1,6 +1,6 @@
 package com.cocofhu.mspf.util;
 
-import com.cocofhu.mspf.protocol.cs.NativeProtocolConstants;
+import com.cocofhu.mspf.protocol.MySQLProtocolConstants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -38,7 +38,7 @@ public class DebugUtils {
 
     public static List<String> listAllCapabilityFlags(int capabilityFlags){
         List<String> flags = new ArrayList<>();
-        Field[] allFieldOfFlags = NativeProtocolConstants.CapabilityFlags.class.getDeclaredFields();
+        Field[] allFieldOfFlags = MySQLProtocolConstants.CapabilityFlags.class.getDeclaredFields();
         for (Field fieldOfFlag : allFieldOfFlags) {
             try {
                 int flag = (int) fieldOfFlag.get(null);

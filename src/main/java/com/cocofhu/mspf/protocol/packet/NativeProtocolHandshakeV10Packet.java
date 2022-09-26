@@ -1,8 +1,8 @@
-package com.cocofhu.mspf.protocol.cs.packet;
+package com.cocofhu.mspf.protocol.packet;
 
-import com.cocofhu.mspf.protocol.cs.NativeProtocolConstants;
-import com.cocofhu.mspf.protocol.cs.NativeProtocolPacket;
-import com.cocofhu.mspf.protocol.cs.NativeProtocolPacketPayload;
+import com.cocofhu.mspf.protocol.MySQLProtocolConstants;
+import com.cocofhu.mspf.protocol.MySQLProtocolPacket;
+import com.cocofhu.mspf.protocol.MySQLProtocolPacketPayload;
 import com.cocofhu.mspf.util.DebugUtils;
 
 import java.util.Arrays;
@@ -14,7 +14,7 @@ import java.util.Random;
 /**
  * MySQL 握手协议V10
  */
-public class NativeProtocolHandshakeV10Packet extends NativeProtocolPacket {
+public class NativeProtocolHandshakeV10Packet extends MySQLProtocolPacket {
     // 协议版本号，数据包第一个字节，总是10
     public static final int PROTOCOL_VERSION = 10;
     // 服务名称
@@ -22,8 +22,8 @@ public class NativeProtocolHandshakeV10Packet extends NativeProtocolPacket {
     // 加密算法
     public static final String DEFAULT_AUTH_PLUGIN_NAME = "mysql_native_password";
     // 默认标志位
-    public static final int DEFAULT_CAPABILITY_FLAGS = NativeProtocolConstants.CapabilityFlags.CLIENT_LONG_PASSWORD | NativeProtocolConstants.CapabilityFlags.CLIENT_FOUND_ROWS | NativeProtocolConstants.CapabilityFlags.CLIENT_LONG_FLAG | NativeProtocolConstants.CapabilityFlags.CLIENT_NO_SCHEMA |
-            NativeProtocolConstants.CapabilityFlags.CLIENT_IGNORE_SPACE | NativeProtocolConstants.CapabilityFlags.CLIENT_PROTOCOL_41 | NativeProtocolConstants.CapabilityFlags.CLIENT_INTERACTIVE | NativeProtocolConstants.CapabilityFlags.CLIENT_PLUGIN_AUTH | NativeProtocolConstants.CapabilityFlags.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA | NativeProtocolConstants.CapabilityFlags.CLIENT_SECURE_CONNECTION;
+    public static final int DEFAULT_CAPABILITY_FLAGS = MySQLProtocolConstants.CapabilityFlags.CLIENT_LONG_PASSWORD | MySQLProtocolConstants.CapabilityFlags.CLIENT_FOUND_ROWS | MySQLProtocolConstants.CapabilityFlags.CLIENT_LONG_FLAG | MySQLProtocolConstants.CapabilityFlags.CLIENT_NO_SCHEMA |
+            MySQLProtocolConstants.CapabilityFlags.CLIENT_IGNORE_SPACE | MySQLProtocolConstants.CapabilityFlags.CLIENT_PROTOCOL_41 | MySQLProtocolConstants.CapabilityFlags.CLIENT_INTERACTIVE | MySQLProtocolConstants.CapabilityFlags.CLIENT_PLUGIN_AUTH | MySQLProtocolConstants.CapabilityFlags.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA | MySQLProtocolConstants.CapabilityFlags.CLIENT_SECURE_CONNECTION;
 
     // 随机密码长度，注意：最小值为20，建议使用20
     public static final int DEFAULT_SCRAMBLE_LENGTH = 20;
@@ -46,7 +46,7 @@ public class NativeProtocolHandshakeV10Packet extends NativeProtocolPacket {
 
     public NativeProtocolHandshakeV10Packet(int connectionId) {
         // 初始化握手序列号必须为0
-        super(0, new NativeProtocolPacketPayload(128));
+        super(0, new MySQLProtocolPacketPayload(128));
         this.scrambleData = new byte[DEFAULT_SCRAMBLE_LENGTH + 1];
         Random random = new Random();
         for(int i = 0 ; i < DEFAULT_SCRAMBLE_LENGTH ; ++i){
@@ -56,39 +56,39 @@ public class NativeProtocolHandshakeV10Packet extends NativeProtocolPacket {
         this.serverVersion = SERVER_VERSION;
         this.capabilityFlags = DEFAULT_CAPABILITY_FLAGS;
         this.connectionId = connectionId;
-        this.charset = (byte) NativeProtocolConstants.Charset.UTF_8;
+        this.charset = (byte) MySQLProtocolConstants.Charset.UTF_8;
         this.statusFlags = 0;
         initPayload();
     }
 
     private void initPayload(){
         // 第一个字节为协议版本号
-        message.writeInteger(NativeProtocolConstants.IntegerDataType.INT1, PROTOCOL_VERSION);
+        payload.writeInteger(MySQLProtocolConstants.IntegerDataType.INT1, PROTOCOL_VERSION);
         // 服务名称
-        message.writeBytes(NativeProtocolConstants.StringSelfDataType.STRING_TERM,serverVersion.getBytes());
+        payload.writeBytes(MySQLProtocolConstants.StringSelfDataType.STRING_TERM,serverVersion.getBytes());
         // 连接ID
-        message.writeInteger(NativeProtocolConstants.IntegerDataType.INT4,connectionId);
+        payload.writeInteger(MySQLProtocolConstants.IntegerDataType.INT4,connectionId);
         // 随机挑战前8个字节
-        message.writeBytes(NativeProtocolConstants.StringLengthDataType.STRING_FIXED, scrambleData, 0, 8);
+        payload.writeBytes(MySQLProtocolConstants.StringLengthDataType.STRING_FIXED, scrambleData, 0, 8);
         // 没用的一个字节对填充
-        message.writeInteger(NativeProtocolConstants.IntegerDataType.INT1,0);
+        payload.writeInteger(MySQLProtocolConstants.IntegerDataType.INT1,0);
         // 服务器兼容性标志位低两位
-        message.writeInteger(NativeProtocolConstants.IntegerDataType.INT2,capabilityFlags);
+        payload.writeInteger(MySQLProtocolConstants.IntegerDataType.INT2,capabilityFlags);
         // 字符集
-        message.writeInteger(NativeProtocolConstants.IntegerDataType.INT1,charset);
+        payload.writeInteger(MySQLProtocolConstants.IntegerDataType.INT1,charset);
         // 服务器状态
-        message.writeInteger(NativeProtocolConstants.IntegerDataType.INT2,statusFlags);
+        payload.writeInteger(MySQLProtocolConstants.IntegerDataType.INT2,statusFlags);
         // 服务器兼容性标志位高两位
-        message.writeInteger(NativeProtocolConstants.IntegerDataType.INT2,capabilityFlags>>>16);
+        payload.writeInteger(MySQLProtocolConstants.IntegerDataType.INT2,capabilityFlags>>>16);
         // 随机挑战长度，加上最后的0x00和前面的8个字节 如果使用默认值的话这里应该是21(0x15)
-        message.writeInteger(NativeProtocolConstants.IntegerDataType.INT1,scrambleData.length);
+        payload.writeInteger(MySQLProtocolConstants.IntegerDataType.INT1,scrambleData.length);
         // 10个字节的0填充
-        message.writeInteger(NativeProtocolConstants.IntegerDataType.INT8,0);
-        message.writeInteger(NativeProtocolConstants.IntegerDataType.INT2,0);
+        payload.writeInteger(MySQLProtocolConstants.IntegerDataType.INT8,0);
+        payload.writeInteger(MySQLProtocolConstants.IntegerDataType.INT2,0);
         // 剩余的随机挑战
-        message.writeBytes(NativeProtocolConstants.StringLengthDataType.STRING_FIXED, scrambleData, 8, scrambleData.length - 8);
+        payload.writeBytes(MySQLProtocolConstants.StringLengthDataType.STRING_FIXED, scrambleData, 8, scrambleData.length - 8);
         // 加密算法(plugin)
-        message.writeBytes(NativeProtocolConstants.StringSelfDataType.STRING_TERM,authPluginName.getBytes());
+        payload.writeBytes(MySQLProtocolConstants.StringSelfDataType.STRING_TERM,authPluginName.getBytes());
     }
 
     /**
@@ -113,7 +113,7 @@ public class NativeProtocolHandshakeV10Packet extends NativeProtocolPacket {
                 ", charset=" + charset +
                 ", statusFlags=" + statusFlags +
                 ", sequenceId=" + sequenceId +
-                ", message=" + message +
+                ", message=" + payload +
                 '}';
     }
 }

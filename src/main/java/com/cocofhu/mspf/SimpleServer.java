@@ -1,12 +1,12 @@
 package com.cocofhu.mspf;
 
-import com.cocofhu.mspf.protocol.cs.NativeProtocolPacket;
-import com.cocofhu.mspf.protocol.cs.NativeProtocolPacketInputStream;
-import com.cocofhu.mspf.protocol.cs.NativeProtocolPacketOutputStream;
-import com.cocofhu.mspf.protocol.cs.packet.NativeProtocolErrorPacket;
-import com.cocofhu.mspf.protocol.cs.packet.NativeProtocolHandshakeResponse41Packet;
-import com.cocofhu.mspf.protocol.cs.packet.NativeProtocolHandshakeV10Packet;
-import com.cocofhu.mspf.protocol.cs.packet.NativeProtocolOKPacket;
+import com.cocofhu.mspf.protocol.MySQLProtocolPacket;
+import com.cocofhu.mspf.protocol.MySQLProtocolPacketInputStream;
+import com.cocofhu.mspf.protocol.MySQLProtocolPacketOutputStream;
+import com.cocofhu.mspf.protocol.packet.MySQLProtocolErrorPacket;
+import com.cocofhu.mspf.protocol.packet.NativeProtocolHandshakeResponse41Packet;
+import com.cocofhu.mspf.protocol.packet.NativeProtocolHandshakeV10Packet;
+import com.cocofhu.mspf.protocol.packet.NativeProtocolOKPacket;
 import com.cocofhu.mspf.util.DebugUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,7 +16,6 @@ import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
@@ -26,8 +25,8 @@ public class SimpleServer {
         // client Socket
         private final Socket socket;
         private final int connectionId;
-        private NativeProtocolPacketInputStream in ;
-        private NativeProtocolPacketOutputStream out;
+        private MySQLProtocolPacketInputStream in ;
+        private MySQLProtocolPacketOutputStream out;
 
 
         public DefaultHandler(Socket socket, int connectionId) {
@@ -41,14 +40,14 @@ public class SimpleServer {
         @Override
         public void run() {
             try {
-                this.out = new NativeProtocolPacketOutputStream(socket.getOutputStream());
-                this.in = new NativeProtocolPacketInputStream(socket.getInputStream());
+                this.out = new MySQLProtocolPacketOutputStream(socket.getOutputStream());
+                this.in = new MySQLProtocolPacketInputStream(socket.getInputStream());
                 // 握手
                 NativeProtocolHandshakeV10Packet initialPacket = new NativeProtocolHandshakeV10Packet(this.connectionId);
-                this.out.writeNativeProtocolPacket(initialPacket);
+                this.out.writePacket(initialPacket);
                 log.debug("send handshake packet, connectionId = {} : {}.", this.connectionId, initialPacket);
                 // 鉴权
-                NativeProtocolPacket nativeProtocolPacket = in.readNativeProtocolPacket();
+                MySQLProtocolPacket nativeProtocolPacket = in.readPacket();
 
 
                 NativeProtocolHandshakeResponse41Packet authResponse = new NativeProtocolHandshakeResponse41Packet(nativeProtocolPacket);
@@ -59,14 +58,14 @@ public class SimpleServer {
                 log.debug("client auth data, connectionId = {}: {}.", this.connectionId, Arrays.toString(authResponse.getAuthResponse()));
                 log.debug("database auth data, connectionId = {} : {}.", this.connectionId, Arrays.toString(authData));
 
-                out.writeNativeProtocolPacket(new NativeProtocolOKPacket(2));
+                out.writePacket(new NativeProtocolOKPacket(2));
 
                 log.info("send auth ok, connectionId = {}.", this.connectionId);
 
 
                 while (true){
-                    System.out.println(DebugUtils.dumpAsHex(in.readNativeProtocolPacket().toBytes()));
-                    out.write(new NativeProtocolErrorPacket(1,1,"unsupported!").toBytes());
+                    System.out.println(DebugUtils.dumpAsHex(in.readPacket().toBytes()));
+                    out.write(new MySQLProtocolErrorPacket(1,1,"unsupported!").toBytes());
                 }
 
 

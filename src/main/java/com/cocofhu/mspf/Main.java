@@ -1,11 +1,11 @@
 package com.cocofhu.mspf;
 
-import com.cocofhu.mspf.protocol.cs.NativeProtocolPacket;
-import com.cocofhu.mspf.protocol.cs.NativeProtocolPacketInputStream;
-import com.cocofhu.mspf.protocol.cs.NativeProtocolPacketOutputStream;
-import com.cocofhu.mspf.protocol.cs.packet.NativeProtocolHandshakeResponse41Packet;
-import com.cocofhu.mspf.protocol.cs.packet.NativeProtocolHandshakeV10Packet;
-import com.cocofhu.mspf.protocol.cs.packet.NativeProtocolOKPacket;
+import com.cocofhu.mspf.protocol.MySQLProtocolPacket;
+import com.cocofhu.mspf.protocol.MySQLProtocolPacketInputStream;
+import com.cocofhu.mspf.protocol.MySQLProtocolPacketOutputStream;
+import com.cocofhu.mspf.protocol.packet.NativeProtocolHandshakeResponse41Packet;
+import com.cocofhu.mspf.protocol.packet.NativeProtocolHandshakeV10Packet;
+import com.cocofhu.mspf.protocol.packet.NativeProtocolOKPacket;
 import com.cocofhu.mspf.util.DebugUtils;
 
 import java.io.IOException;
@@ -20,13 +20,13 @@ public class Main {
         try(
                 ServerSocket socket = new ServerSocket(9988);
                 Socket accept = socket.accept();
-                NativeProtocolPacketInputStream in = new NativeProtocolPacketInputStream(accept.getInputStream());
-                NativeProtocolPacketOutputStream out = new NativeProtocolPacketOutputStream(accept.getOutputStream());
+                MySQLProtocolPacketInputStream in = new MySQLProtocolPacketInputStream(accept.getInputStream());
+                MySQLProtocolPacketOutputStream out = new MySQLProtocolPacketOutputStream(accept.getOutputStream());
         ) {
             // 握手
             NativeProtocolHandshakeV10Packet first = new NativeProtocolHandshakeV10Packet(1);
-            out.writeNativeProtocolPacket(first);
-            NativeProtocolPacket nativeProtocolPacket = in.readNativeProtocolPacket();
+            out.writePacket(first);
+            MySQLProtocolPacket nativeProtocolPacket = in.readPacket();
             System.out.println(new NativeProtocolHandshakeResponse41Packet(nativeProtocolPacket));
             System.out.println(DebugUtils.dumpAsHex(nativeProtocolPacket.toBytes()));
 
@@ -35,7 +35,7 @@ public class Main {
             System.out.println(DebugUtils.dumpAsHex(scramble411("1111".getBytes(), seed)));
 
 
-            out.writeNativeProtocolPacket(new NativeProtocolOKPacket(2));
+            out.writePacket(new NativeProtocolOKPacket(2));
 
 
 
