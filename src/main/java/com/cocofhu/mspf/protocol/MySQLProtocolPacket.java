@@ -1,15 +1,18 @@
 package com.cocofhu.mspf.protocol;
 
-
-// https://dev.mysql.com/doc/internals/en/mysql-packet.html
-
 import lombok.Getter;
 
 /**
- * MySQL client/server协议网络包，由消息头和数据部分构成
+ * MySQL client/server protocol packet, every packet will extend from this class.
+ * it's consists of header(sequenceId + payloadLength) and payload.
+ * <a href="https://dev.mysql.com/doc/internals/en/mysql-packet.html">...</a>
  */
 public class MySQLProtocolPacket {
 
+    /**
+     *  The sequence-id is incremented with each packet and may wrap around.
+     *  It starts at 0 and is reset to 0 when a new command begins in the Command Phase.
+     */
     @Getter
     public final int sequenceId;
 
@@ -18,17 +21,20 @@ public class MySQLProtocolPacket {
 
 
 
-    /**
-     * 通过 sequenceId 和消息载体创建一个MySQL包
-     * @param sequenceId    0-255，一个字节的序列ID，多余的部分将会被忽略
-     * @param payload       消息载体
-     */
+    /** initiate packet with an id of sequence and payload.*/
     public MySQLProtocolPacket(int sequenceId, MySQLProtocolPacketPayload payload) {
         this.sequenceId = sequenceId;
         this.payload = payload;
     }
 
+    /** initiate packet with an id of sequence, it has an empty payload.*/
+    public MySQLProtocolPacket(int sequenceId) {
+        this.sequenceId = sequenceId;
+        this.payload = new MySQLProtocolPacketPayload(0);
+    }
 
+
+    /** pack this packet as bytes array. */
     public byte[] toBytes(){
         int payloadLength = payload.getPayloadLength();
         byte[] headerBytes = new byte[]{

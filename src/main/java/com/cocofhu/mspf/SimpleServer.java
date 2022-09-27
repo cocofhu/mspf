@@ -3,10 +3,9 @@ package com.cocofhu.mspf;
 import com.cocofhu.mspf.protocol.MySQLProtocolPacket;
 import com.cocofhu.mspf.protocol.MySQLProtocolPacketInputStream;
 import com.cocofhu.mspf.protocol.MySQLProtocolPacketOutputStream;
-import com.cocofhu.mspf.protocol.packet.MySQLProtocolErrorPacket;
-import com.cocofhu.mspf.protocol.packet.NativeProtocolHandshakeResponse41Packet;
-import com.cocofhu.mspf.protocol.packet.NativeProtocolHandshakeV10Packet;
-import com.cocofhu.mspf.protocol.packet.NativeProtocolOKPacket;
+import com.cocofhu.mspf.protocol.packet.MySQLProtocolHandshakeResponse41Packet;
+import com.cocofhu.mspf.protocol.packet.MySQLProtocolHandshakeV10Packet;
+import com.cocofhu.mspf.protocol.plugin.auth.MySQLNativePasswordAuth;
 import com.cocofhu.mspf.util.DebugUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,14 +42,14 @@ public class SimpleServer {
                 this.out = new MySQLProtocolPacketOutputStream(socket.getOutputStream());
                 this.in = new MySQLProtocolPacketInputStream(socket.getInputStream());
                 // 握手
-                NativeProtocolHandshakeV10Packet initialPacket = new NativeProtocolHandshakeV10Packet(this.connectionId);
+                MySQLProtocolHandshakeV10Packet initialPacket = new MySQLProtocolHandshakeV10Packet(this.connectionId, new MySQLNativePasswordAuth());
                 this.out.writePacket(initialPacket);
                 log.debug("send handshake packet, connectionId = {} : {}.", this.connectionId, initialPacket);
                 // 鉴权
                 MySQLProtocolPacket nativeProtocolPacket = in.readPacket();
 
 
-                NativeProtocolHandshakeResponse41Packet authResponse = new NativeProtocolHandshakeResponse41Packet(nativeProtocolPacket);
+                MySQLProtocolHandshakeResponse41Packet authResponse = new MySQLProtocolHandshakeResponse41Packet(nativeProtocolPacket);
                 log.debug("read response of handshake packet from server, connectionId = {} : {}.", this.connectionId, authResponse);
 
                 byte[] authData = scramble411(PASSWORD.getBytes(), initialPacket.getScrambleData());
@@ -58,14 +57,14 @@ public class SimpleServer {
                 log.debug("client auth data, connectionId = {}: {}.", this.connectionId, Arrays.toString(authResponse.getAuthResponse()));
                 log.debug("database auth data, connectionId = {} : {}.", this.connectionId, Arrays.toString(authData));
 
-                out.writePacket(new NativeProtocolOKPacket(2));
+//                out.writePacket(new MySQLProtocolOKPacket(2));
 
                 log.info("send auth ok, connectionId = {}.", this.connectionId);
 
 
                 while (true){
                     System.out.println(DebugUtils.dumpAsHex(in.readPacket().toBytes()));
-                    out.write(new MySQLProtocolErrorPacket(1,1,"unsupported!").toBytes());
+//                    out.write(new MySQLProtocolErrorPacket(1,1,"unsupported!").toBytes());
                 }
 
 

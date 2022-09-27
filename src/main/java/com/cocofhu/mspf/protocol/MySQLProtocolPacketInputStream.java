@@ -11,7 +11,7 @@ import java.io.InputStream;
 public class MySQLProtocolPacketInputStream extends InputStream {
 
 
-    final InputStream in;
+    private final InputStream in;
 
     public MySQLProtocolPacketInputStream(InputStream in) {
         this.in = in;

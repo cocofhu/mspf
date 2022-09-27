@@ -7,21 +7,31 @@ import com.cocofhu.mspf.protocol.MySQLProtocolConstants;
 import com.cocofhu.mspf.util.DebugUtils;
 import lombok.Getter;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 
 import static com.cocofhu.mspf.protocol.MySQLProtocolConstants.CapabilityFlags.*;
 
-public class NativeProtocolHandshakeResponse41Packet extends MySQLProtocolPacket {
+public class MySQLProtocolHandshakeResponse41Packet extends MySQLProtocolPacket {
 
-    // 注意：CLIENT_PLUGIN_AUTH,CLIENT_PROTOCOL_41,CLIENT_PLUGIN_AUTH,CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA 这四个必须要有，否则将影响数据包的解析
+    // Required flags:
+    // CLIENT_PLUGIN_AUTH,
+    // CLIENT_PROTOCOL_41,
+    // CLIENT_PLUGIN_AUTH,
+    // CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA
     // https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_connection_phase_packets_protocol_handshake_response.html
-    // CLIENT_INTERACTIVE | CLIENT_TRANSACTIONS JDBC驱动并没有这两个标志位
+    // CLIENT_INTERACTIVE | CLIENT_TRANSACTIONS JDBC is not in mysql jdbc driver
     private static final int MIN_CLIENT_FLAGS = CLIENT_LONG_PASSWORD | CLIENT_LONG_FLAG | CLIENT_PROTOCOL_41  | CLIENT_SECURE_CONNECTION | CLIENT_PLUGIN_AUTH | CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA;
 
     // 目前仅支持utf-8
-    private static final HashMap<Integer,String> ONLY_SUPPORTED_CHARSET = MySQLProtocolConstants.UTF8_COLLATION_NAME;
-    private static final String ONLY_SUPPORTED_CHARSET_NAME = "utf-8";
+    private static final HashMap<Integer,Charset> ONLY_SUPPORTED_CHARSET;
+    static {
+        ONLY_SUPPORTED_CHARSET = new HashMap<>();
+        // UTF-8
+        MySQLProtocolConstants.UTF8_COLLATION_NAME.forEach((i,s)->ONLY_SUPPORTED_CHARSET.put(i,StandardCharsets.UTF_8));
+    }
 
     // the Authentication Method used by the client to generate auth-response value in this packet. This is an UTF-8 string.
     // https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_connection_phase_packets_protocol_handshake_response.html
@@ -34,7 +44,7 @@ public class NativeProtocolHandshakeResponse41Packet extends MySQLProtocolPacket
     @Getter
     private final long maxPacketSize;
     @Getter
-    private final int charset;
+    private final Charset charset;
     @Getter
     private final String username;
     @Getter
@@ -44,10 +54,13 @@ public class NativeProtocolHandshakeResponse41Packet extends MySQLProtocolPacket
     @Getter
     private final String pluginName;
 
+    @Getter
+    private final int charsetCode;
 
 
 
-    public NativeProtocolHandshakeResponse41Packet(MySQLProtocolPacket packet) {
+
+    public MySQLProtocolHandshakeResponse41Packet(MySQLProtocolPacket packet) {
         super(packet.getSequenceId(), packet.getPayload());
         // 客户端兼容性标志
         this.clientFlags = (int) payload.readInteger(MySQLProtocolConstants.IntegerDataType.INT4);
@@ -60,14 +73,15 @@ public class NativeProtocolHandshakeResponse41Packet extends MySQLProtocolPacket
         // 最大支持的数据包大小
         this.maxPacketSize = payload.readInteger(MySQLProtocolConstants.IntegerDataType.INT4);
         // 字符集
-        this.charset = (int) payload.readInteger(MySQLProtocolConstants.IntegerDataType.INT1);
+        this.charsetCode = (int) payload.readInteger(MySQLProtocolConstants.IntegerDataType.INT1);
 
-        // 这里后期支持多字符集 目前仅支持utf-8
-        if (!ONLY_SUPPORTED_CHARSET.containsKey(this.charset)) {
-            throw new CharsetNotSupportedException(this.charset);
+
+        if (!ONLY_SUPPORTED_CHARSET.containsKey(this.charsetCode)) {
+            throw new CharsetNotSupportedException(this.charsetCode);
         }
 
-        String charsetName = ONLY_SUPPORTED_CHARSET_NAME;
+        this.charset = ONLY_SUPPORTED_CHARSET.get(this.charsetCode);
+        String charsetName = this.charset.name();
 
         // 跳过23个字节的填充
         payload.readBytes(MySQLProtocolConstants.StringLengthDataType.STRING_FIXED, 23);
@@ -84,7 +98,6 @@ public class NativeProtocolHandshakeResponse41Packet extends MySQLProtocolPacket
             this.database = null;
         }
 
-        // CLIENT_PLUGIN_AUTH
         this.pluginName = payload.readString(MySQLProtocolConstants.StringSelfDataType.STRING_TERM, CLIENT_PLUGIN_AUTH_CHARSET);
     }
 

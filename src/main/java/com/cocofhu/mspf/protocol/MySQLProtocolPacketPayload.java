@@ -271,31 +271,7 @@ public class MySQLProtocolPacketPayload {
     }
 
 
-//    public void skipBytes(NativeProtocolConstants.StringSelfDataType type) {
-//        switch (type) {
-//            case STRING_TERM:
-//                while ((this.position < this.payloadLength) && (this.byteBuffer[this.position] != 0)) {
-//                    this.position++;
-//                }
-//                this.position++; // skip terminating byte
-//                break;
-//
-//            case STRING_LENENC:
-//                long len = readInteger(INT_LENENC);
-//                if (len != NULL_LENGTH && len != 0) {
-//                    this.position += (int) len;
-//                }
-//                break;
-//
-//            case STRING_EOF:
-//                this.position = this.payloadLength;
-//                break;
-//        }
-//    }
-
-
     // Override methods
-
 
     /** 直接操作底层字节数组时需要格外小心，操作不当可能会造成错误的MySQL包 */
     public byte[] underlyingBytes() {

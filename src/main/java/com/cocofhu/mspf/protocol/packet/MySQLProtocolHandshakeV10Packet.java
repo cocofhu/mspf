@@ -3,6 +3,7 @@ package com.cocofhu.mspf.protocol.packet;
 import com.cocofhu.mspf.protocol.MySQLProtocolConstants;
 import com.cocofhu.mspf.protocol.MySQLProtocolPacket;
 import com.cocofhu.mspf.protocol.MySQLProtocolPacketPayload;
+import com.cocofhu.mspf.protocol.plugin.auth.MySQLProtocolAuth;
 import com.cocofhu.mspf.util.DebugUtils;
 
 import java.util.Arrays;
@@ -14,13 +15,13 @@ import java.util.Random;
 /**
  * MySQL 握手协议V10
  */
-public class NativeProtocolHandshakeV10Packet extends MySQLProtocolPacket {
+public class MySQLProtocolHandshakeV10Packet extends MySQLProtocolPacket {
     // 协议版本号，数据包第一个字节，总是10
     public static final int PROTOCOL_VERSION = 10;
     // 服务名称
     public static final String SERVER_VERSION = "Coco's SQL Proxy Server";
     // 加密算法
-    public static final String DEFAULT_AUTH_PLUGIN_NAME = "mysql_native_password";
+//    public static final String DEFAULT_AUTH_PLUGIN_NAME = "mysql_native_password";
     // 默认标志位
     public static final int DEFAULT_CAPABILITY_FLAGS = MySQLProtocolConstants.CapabilityFlags.CLIENT_LONG_PASSWORD | MySQLProtocolConstants.CapabilityFlags.CLIENT_FOUND_ROWS | MySQLProtocolConstants.CapabilityFlags.CLIENT_LONG_FLAG | MySQLProtocolConstants.CapabilityFlags.CLIENT_NO_SCHEMA |
             MySQLProtocolConstants.CapabilityFlags.CLIENT_IGNORE_SPACE | MySQLProtocolConstants.CapabilityFlags.CLIENT_PROTOCOL_41 | MySQLProtocolConstants.CapabilityFlags.CLIENT_INTERACTIVE | MySQLProtocolConstants.CapabilityFlags.CLIENT_PLUGIN_AUTH | MySQLProtocolConstants.CapabilityFlags.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA | MySQLProtocolConstants.CapabilityFlags.CLIENT_SECURE_CONNECTION;
@@ -44,7 +45,7 @@ public class NativeProtocolHandshakeV10Packet extends MySQLProtocolPacket {
     private final int statusFlags;
 
 
-    public NativeProtocolHandshakeV10Packet(int connectionId) {
+    public MySQLProtocolHandshakeV10Packet(int connectionId, MySQLProtocolAuth auth) {
         // 初始化握手序列号必须为0
         super(0, new MySQLProtocolPacketPayload(128));
         this.scrambleData = new byte[DEFAULT_SCRAMBLE_LENGTH + 1];
@@ -52,10 +53,11 @@ public class NativeProtocolHandshakeV10Packet extends MySQLProtocolPacket {
         for(int i = 0 ; i < DEFAULT_SCRAMBLE_LENGTH ; ++i){
             this.scrambleData[i] = (byte) random.nextInt();
         }
-        this.authPluginName = DEFAULT_AUTH_PLUGIN_NAME;
+        this.authPluginName = auth.getAuthPluginName();
         this.serverVersion = SERVER_VERSION;
         this.capabilityFlags = DEFAULT_CAPABILITY_FLAGS;
         this.connectionId = connectionId;
+        // always utf8
         this.charset = (byte) MySQLProtocolConstants.Charset.UTF_8;
         this.statusFlags = 0;
         initPayload();

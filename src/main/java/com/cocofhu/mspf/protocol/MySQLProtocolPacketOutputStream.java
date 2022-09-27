@@ -6,7 +6,7 @@ import java.io.OutputStream;
 
 public class MySQLProtocolPacketOutputStream extends OutputStream {
 
-    final OutputStream out;
+    private final OutputStream out;
     public MySQLProtocolPacketOutputStream(OutputStream out) {
         this.out = out;
     }
@@ -18,7 +18,6 @@ public class MySQLProtocolPacketOutputStream extends OutputStream {
         }
     }
     @Override
-    @Deprecated
     public void write(int b) throws IOException {
         out.write(b);
     }

@@ -195,9 +195,23 @@ public class MySQLProtocolConstants {
     public static final int COM_BINLOG_DUMP_GTID = 30;
     public static final int COM_RESET_CONNECTION = 31;
 
+    public enum SessionPhase{
+        /** when connecting or handshaking */
+        CONNECTION,
+        /** after handshake success, wait for command of client */
+        COMMAND,
+        /** after client disconnected*/
+        DISCONNECTED
+    }
 
     public interface Charset{
         int UTF_8 = 255;
+    }
+
+    public interface ErrorCode{
+        // username or password error
+        int INVALID_AUTH_DATA = 1;
+
     }
 
     public interface ServerStatus{
@@ -248,8 +262,7 @@ public class MySQLProtocolConstants {
         /** 废弃 */
         @Deprecated
         int CLIENT_RESERVED = 0x00004000; // for 4.1.0 only
-        /** 废弃 */
-        @Deprecated
+
         int CLIENT_SECURE_CONNECTION = 0x00008000;
 
         /** 多语句支持 */
